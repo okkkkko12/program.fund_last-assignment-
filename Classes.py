@@ -122,14 +122,6 @@ class EventManagement:
         self.filename = filename
         self.events = self.load_events()
 
-    def load_events(self):
-        # Load events from a file; handle the case where the file is not found by returning an empty list.
-        try:
-            with open(self.filename, 'rb') as f:
-                return pickle.load(f)
-        except FileNotFoundError:
-            return []
-
     def add_event(self, event):
         # Add an event to the list if it does not already exist by its ID.
         if event.event_id not in [e.event_id for e in self.events]:
@@ -175,6 +167,18 @@ class EventManagement:
         if isinstance(event, Event):
             return str(event)
         return "Event not found."
+
+    def save_events(self):
+        with open(self.filename, 'wb') as f:
+            pickle.dump(self.events, f)
+
+    def load_events(self):
+        try:
+            with open(self.filename, 'rb') as f:
+                return pickle.load(f)
+        except FileNotFoundError:
+            return []
+
 
 class Client:
     def __init__(self, client_id, name, address, contact_details, budget):
@@ -242,12 +246,18 @@ class ClientManagement:
             pickle.dump(self.clients, f)
 
     def load_clients(self):
-        # Deserialize and load the list of clients from a file
         try:
             with open(self.filename, 'rb') as f:
-                return pickle.load(f)
+                try:
+                    if os.path.getsize(self.filename) > 0:
+                        return pickle.load(f)
+                    else:
+                        return []  # Return an empty list if file is empty
+                except pickle.UnpicklingError as e:
+                    print(f"Error unpickling data: {e}")
+                    return []  # Return an empty list if unpickling fails
         except FileNotFoundError:
-            return []  # Return an empty list if the file does not exist
+            return []  # Return an empty list if file does not exist
 
 
 class Guest:
@@ -320,9 +330,16 @@ class GuestManagement:
     def load_guests(self):
         try:
             with open(self.filename, 'rb') as f:
-                return pickle.load(f)
+                try:
+                    if os.path.getsize(self.filename) > 0:
+                        return pickle.load(f)
+                    else:
+                        return []  # Return an empty list if file is empty
+                except pickle.UnpicklingError as e:
+                    print(f"Error unpickling data: {e}")
+                    return []  # Return an empty list if unpickling fails
         except FileNotFoundError:
-            return []
+            return []  # Return an empty list if file does not exist
 
     # This line ensures that the Guest class is recognized when loading objects from pickle
     sys.modules['__main__.Guest'] = Guest
