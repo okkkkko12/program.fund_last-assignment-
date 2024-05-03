@@ -176,4 +176,301 @@ class EventManagement:
             return str(event)
         return "Event not found."
 
+class Client:
+    def __init__(self, client_id, name, address, contact_details, budget):
+        # Initialization method for the Client class
+        self.client_id = client_id  # Unique identifier for the client
+        self.name = name  # Name of the client
+        self.address = address  # Address of the client
+        self.contact_details = contact_details  # Contact details of the client
+        self.budget = budget  # Budget of the client
+
+    def __str__(self):
+        # String representation of the Client object, used when printing
+        return f"Client ID: {self.client_id}, Name: {self.name}, Address: {self.address}, Contact: {self.contact_details}, Budget: ${self.budget}"
+
+class ClientManagement:
+    def __init__(self, filename='clients.pkl'):
+        # Initialization method for the ClientManagement class
+        self.filename = filename  # File to store client data
+        self.clients = self.load_clients()  # Load existing clients from file
+
+    def add_client(self, client):
+        # Add a new client to the system
+        if client.client_id not in [c.client_id for c in self.clients]:
+            self.clients.append(client)  # Append new client if ID not found
+            self.save_clients()  # Save updated client list to file
+            return f"Client {client.name} added successfully."
+        return "A client with this ID already exists."
+
+    def delete_client(self, client_id):
+        # Delete a client from the system by ID
+        original_count = len(self.clients)
+        self.clients = [c for c in self.clients if c.client_id != client_id]
+        if len(self.clients) < original_count:
+            self.save_clients()  # Save the updated list to file after deletion
+            return "Client deleted successfully."
+        return "Client not found."
+
+    def modify_client(self, client_id, **kwargs):
+        # Modify attributes of an existing client
+        for client in self.clients:
+            if client.client_id == client_id:
+                for key, value in kwargs.items():
+                    setattr(client, key, value)  # Set new values for attributes
+                self.save_clients()  # Save changes to file
+                return f"Client {client_id} updated successfully."
+        return "Client not found."
+
+    def find_client(self, client_id):
+        # Retrieve a client's details by ID
+        for client in self.clients:
+            if client.client_id == client_id:
+                return client
+        return "Client not found."
+
+    def display_client_details(self, client_id):
+        # Display details of a specific client
+        client = self.find_client(client_id)
+        if isinstance(client, Client):
+            return str(client)
+        return "Client not found."
+
+    def save_clients(self):
+        # Serialize and save the list of clients to a file
+        with open(self.filename, 'wb') as f:
+            pickle.dump(self.clients, f)
+
+    def load_clients(self):
+        # Deserialize and load the list of clients from a file
+        try:
+            with open(self.filename, 'rb') as f:
+                return pickle.load(f)
+        except FileNotFoundError:
+            return []  # Return an empty list if the file does not exist
+
+
+class Guest:
+    # Initializer for the Guest class
+    def __init__(self, guest_id, name, address, contact_details):
+        self.guest_id = guest_id
+        self.name = name
+        self.address = address
+        self.contact_details = contact_details
+
+    # Returns a string representation of a Guest object
+    def __str__(self):
+        return f"Guest ID: {self.guest_id}, Name: {self.name}, Address: {self.address}, Contact: {self.contact_details}"
+
+class GuestManagement:
+    # Initializer for the GuestManagement class with a default filename
+    def __init__(self, filename='guests.pkl'):
+        self.filename = filename
+        self.guests = self.load_guests()  # Loads guests from a file on initialization
+
+    # Adds a guest to the guest list if they don't already exist
+    def add_guest(self, guest):
+        # Check if the guest ID already exists in the guest list
+        if guest.guest_id not in [g.guest_id for g in self.guests]:
+            self.guests.append(guest)  # Add the new guest
+            self.save_guests()  # Save the updated list to file
+            return f"Guest {guest.name} added successfully."
+        return "A guest with this ID already exists."
+
+    # Deletes a guest from the guest list by their ID
+    def delete_guest(self, guest_id):
+        original_count = len(self.guests)
+        self.guests = [g for g in self.guests if g.guest_id != guest_id]  # Filter out the guest to delete
+        if len(self.guests) < original_count:
+            self.save_guests()  # Save the updated list to file
+            return "Guest deleted successfully."
+        return "Guest not found."
+
+    # Modifies details of a guest found by their ID
+    def modify_guest(self, guest_id, **kwargs):
+        for guest in self.guests:
+            if guest.guest_id == guest_id:
+                # Update attributes provided in kwargs
+                for key, value in kwargs.items():
+                    setattr(guest, key, value)
+                self.save_guests()  # Save the updated list to file
+                return f"Guest {guest_id} updated successfully."
+        return "Guest not found."
+
+    # Finds a guest by their ID
+    def find_guest(self, guest_id):
+        for guest in self.guests:
+            if guest.guest_id == guest_id:
+                return guest
+        return "Guest not found."
+
+    # Displays details of a specific guest
+    def display_guest_details(self, guest_id):
+        guest = self.find_guest(guest_id)
+        if isinstance(guest, Guest):
+            return str(guest)
+        return "Guest not found."
+
+    # Saves the current list of guests to a file
+    def save_guests(self):
+        with open(self.filename, 'wb') as f:
+            pickle.dump(self.guests, f)
+
+    # Loads guests from a file or returns an empty list if the file is not found
+    def load_guests(self):
+        try:
+            with open(self.filename, 'rb') as f:
+                return pickle.load(f)
+        except FileNotFoundError:
+            return []
+
+    # This line ensures that the Guest class is recognized when loading objects from pickle
+    sys.modules['__main__.Guest'] = Guest
+
+class Supplier:
+    def __init__(self, supplier_id, name, address, contact_details, services_offered):
+        # Initialize a new Supplier object with necessary attributes.
+        self.supplier_id = supplier_id
+        self.name = name
+        self.address = address
+        self.contact_details = contact_details
+        self.services_offered = services_offered
+
+    def __str__(self):
+        # String representation for a Supplier object, formatted for readability.
+        return (f"Supplier ID: {self.supplier_id}, Name: {self.name}, Address: {self.address}, "
+                f"Contact Details: {self.contact_details}, Services Offered: {self.services_offered}")
+
+
+class SupplierManagement:
+    def __init__(self, filename='suppliers.pkl'):
+        # Initialize SupplierManagement with a file name, default is 'suppliers.pkl'.
+        # Load suppliers from file on initialization.
+        self.filename = filename
+        self.suppliers = self.load_suppliers()
+
+    def add_supplier(self, supplier):
+        # Add a new supplier to the dictionary if not already present, save to file.
+        if supplier.supplier_id in self.suppliers:
+            return "Supplier already exists."
+        self.suppliers[supplier.supplier_id] = supplier
+        self.save_suppliers()
+        return "Supplier added successfully."
+
+    def delete_supplier(self, supplier_id):
+        # Delete a supplier by ID from the dictionary, save the updated dictionary to file.
+        if supplier_id in self.suppliers:
+            del self.suppliers[supplier_id]
+            self.save_suppliers()
+            return "Supplier deleted successfully."
+        return "Supplier not found."
+
+    def modify_supplier(self, supplier_id, **kwargs):
+        # Modify attributes of an existing supplier using keyword arguments, save to file.
+        if supplier_id not in self.suppliers:
+            return "Supplier not found."
+        supplier = self.suppliers[supplier_id]
+        for key, value in kwargs.items():
+            setattr(supplier, key, value)
+        self.save_suppliers()
+        return "Supplier updated successfully."
+
+    def find_supplier(self, supplier_id):
+        # Retrieve a supplier by ID from the dictionary.
+        return self.suppliers.get(supplier_id, "Supplier not found.")
+
+    def display_supplier_details(self, supplier_id):
+        # Display details of a specific supplier, if found.
+        supplier = self.find_supplier(supplier_id)
+        if supplier != "Supplier not found.":
+            return str(supplier)
+        return "Supplier not found."
+
+    def save_suppliers(self):
+        # Save the current state of suppliers dictionary to a file using pickle.
+        with open(self.filename, 'wb') as f:
+            pickle.dump(self.suppliers, f)
+
+    def load_suppliers(self):
+        # Load suppliers from a file if it exists, otherwise return an empty dictionary.
+        if os.path.exists(self.filename):
+            with open(self.filename, 'rb') as f:
+                return pickle.load(f)
+        return {}
+
+class Venue:
+    def __init__(self, venue_id, name, address, contact_details, min_guests, max_guests):
+        # Constructor for the Venue class with initialization of all its attributes
+        self.venue_id = venue_id
+        self.name = name
+        self.address = address
+        self.contact_details = contact_details
+        self.min_guests = min_guests
+        self.max_guests = max_guests
+
+    def __str__(self):
+        # String representation of the Venue object, used when printing the object
+        return (f"Venue ID: {self.venue_id}, Name: {self.name}, Address: {self.address}, "
+                f"Contact: {self.contact_details}, Min Guests: {self.min_guests}, Max Guests: {self.max_guests}")
+
+class VenueManagement:
+    def __init__(self, filename='venues.pkl'):
+        # Constructor for VenueManagement class with default filename for storage
+        self.filename = filename
+        self.venues = self.load_venues()  # Load venues from the file when an instance is created
+
+    def add_venue(self, venue):
+        # Add a new venue to the list if it does not already exist based on venue_id
+        if venue.venue_id not in [v.venue_id for v in self.venues]:
+            self.venues.append(venue)
+            self.save_venues()  # Save updated list of venues
+            return f"Venue {venue.name} added successfully."
+        return "A venue with this ID already exists."
+
+    def delete_venue(self, venue_id):
+        # Delete a venue by venue_id and save the changes
+        original_count = len(self.venues)
+        self.venues = [v for v in self.venues if v.venue_id != venue_id]
+        if len(self.venues) < original_count:
+            self.save_venues()
+            return "Venue deleted successfully."
+        return "Venue not found."
+
+    def modify_venue(self, venue_id, **kwargs):
+        # Modify attributes of a specific venue using keyword arguments
+        for venue in self.venues:
+            if venue.venue_id == venue_id:
+                for key, value in kwargs.items():
+                    setattr(venue, key, value)  # Update attributes if the venue is found
+                self.save_venues()
+                return f"Venue {venue_id} updated successfully."
+        return "Venue not found."
+
+    def find_venue(self, venue_id):
+        # Find and return a venue by its venue_id
+        for venue in self.venues:
+            if venue.venue_id == venue_id:
+                return venue
+        return "Venue not found."
+
+    def display_venue_details(self, venue_id):
+        # Display details of a specific venue
+        venue = self.find_venue(venue_id)
+        if venue != "Venue not found.":
+            return str(venue)
+        return "Venue not found."
+
+    def save_venues(self):
+        # Save the list of venues to a file using pickle
+        with open(self.filename, 'wb') as f:
+            pickle.dump(self.venues, f)
+
+    def load_venues(self):
+        # Load venues from a file, handling the case where the file might not exist
+        try:
+            with open(self.filename, 'rb') as f:
+                return pickle.load(f)
+        except FileNotFoundError:
+            return []  # Return an empty list if the file is not found
+
 
